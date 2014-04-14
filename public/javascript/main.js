@@ -40,7 +40,7 @@
     });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! please declare your name?");
+    var username = window.prompt("Welcome! What's your name?");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -67,7 +67,6 @@
 
   // creates a message node and appends it to the conversation
   function display_msg(data){
-    $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     var index = data.m.indexOf(":");
     var friendsName = data.m.substring(0, index);
     if(data.v){
@@ -92,10 +91,13 @@
       // var video = document.createElement("img");
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
       if (displayVideo) {
+        $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+friendsName + ":" +"</div>");
         document.getElementById("conversation").appendChild(video);
-        if (friendsName != globalUsername) {
-          $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+globalUsername + " is now watching " + friendsName + "'s emotivid!" +"</div>");
+        if (friendsName == globalUsername) {
+          $("#conversation").append("<div class='msg' style='color:"+data.c+"'>Your emotivid is now being watched!</div>");
         }
+      } else {
+        $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
       }
     }
   }
@@ -177,7 +179,7 @@
 
   // check to see if a message qualifies to be replaced with video.
   var has_emotions = function(msg){
-    var options = ["lol",":)",":("];
+    var options = ["lol",":)",":(", "LOL"];
     for(var i=0;i<options.length;i++){
       if(msg.indexOf(options[i])!= -1){
         return true;
