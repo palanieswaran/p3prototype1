@@ -36,7 +36,9 @@
 
     // listen to events
     fb_instance_users.on("child_added",function(snapshot){
+      displayURL = true;
       display_msg({m:snapshot.val().name+" joined the room",c: snapshot.val().c});
+      displayURL = false;
     });
     fb_instance_stream.on("child_added",function(snapshot){
       display_msg(snapshot.val());
