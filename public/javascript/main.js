@@ -6,6 +6,7 @@
   var cur_video_blob = null;
   var fb_instance;
   var globalUsername = "";
+  var displayURL = true;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -23,7 +24,9 @@
     }else{
       fb_chat_room_id = Math.random().toString(36).substring(7);
     }
-    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"})
+
+    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"});
+    displayURL = false;
 
     // set up variables to access firebase data structure
     var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
@@ -67,39 +70,44 @@
 
   // creates a message node and appends it to the conversation
   function display_msg(data){
-    var index = data.m.indexOf(":");
-    var friendsName = data.m.substring(0, index);
-    if(data.v){
-      // for video element
-      var displayVideo = true;
-      if (friendsName != globalUsername) {
-        displayVideo = confirm("You just received an emotivid! Click Ok to see it!");
-      }
-      var video = document.createElement("video");
-      video.autoplay = true;
-      video.controls = false; // optional
-      video.loop = false;
-      video.width = 120;
-
-      var source = document.createElement("source");
-      source.src =  URL.createObjectURL(base64_to_blob(data.v));
-      source.type =  "video/webm";
-
-      video.appendChild(source);
-
-      // for gif instead, use this code below and change mediaRecorder.mimeType in onMediaSuccess below
-      // var video = document.createElement("img");
-      // video.src = URL.createObjectURL(base64_to_blob(data.v));
-      if (displayVideo) {
-        $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+friendsName + ":" +"</div>");
-        document.getElementById("conversation").appendChild(video);
-        if (friendsName == globalUsername) {
-          $("#conversation").append("<div class='msg' style='color:"+data.c+"'>Your emotivid is now being watched!</div>");
+    if (displayURL === true) {
+      $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
+    } else {
+      var index = data.m.indexOf(":");
+      var friendsName = data.m.substring(0, index);
+      if(data.v){
+        // for video element
+        var displayVideo = true;
+        if (friendsName != globalUsername) {
+          displayVideo = confirm("You just received an emotivid! Click Ok to see it!");
         }
-      } else {
-        $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
+        var video = document.createElement("video");
+        video.autoplay = true;
+        video.controls = false; // optional
+        video.loop = false;
+        video.width = 120;
+
+        var source = document.createElement("source");
+        source.src =  URL.createObjectURL(base64_to_blob(data.v));
+        source.type =  "video/webm";
+
+        video.appendChild(source);
+
+        // for gif instead, use this code below and change mediaRecorder.mimeType in onMediaSuccess below
+        // var video = document.createElement("img");
+        // video.src = URL.createObjectURL(base64_to_blob(data.v));
+        if (displayVideo) {
+          $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+friendsName + ":" +"</div>");
+          document.getElementById("conversation").appendChild(video);
+          if (friendsName == globalUsername) {
+            $("#conversation").append("<div class='msg' style='color:"+data.c+"'>Your emotivid is now being watched!</div>");
+          }
+        } else {
+          $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
+        }
       }
     }
+    scroll_to_bottom(0);
   }
 
   function scroll_to_bottom(wait_time){
